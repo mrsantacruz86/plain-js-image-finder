@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        box-sizing: border-box;
+        margin: 15px;
+        color: #a71d28;
+      }
+      h1 {
+        text-align: center;
+        font-size: 3rem;
+        padding: 1rem;
+      }
+      input {
+        display: block;
+        width: 90%;
+        padding: 10px;
+        margin: 0 auto;
+        border: 1px solid #a71d28;
+        border-radius: 2rem;
+        /* box-shadow: 2px 2px 3px #333; */
+        font-size: 1.25rem;
+      }
+      .images-list {
+        width: 90%;
+        margin: 0 auto;
+        margin-top: 20px;
+      }
+      .image {
+        float: inline-start;
+        max-width: 30%;
+        margin: 10px;
+        box-shadow: 2px 2px 5px #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>UNSPLASH IMAGE FINDER</h1>
+    <form onsubmit="unsplash(event)">
+      <input name="query" type="text" placeholder="search for images..." />
+    </form>
+    <div class="images-list"></div>
+
+    <script>
+      const baseURL =
+        "https://api.unsplash.com/search/photos?client_id=7d5301c552ac73fde4de7fddb24858531ad93aa75c5c54b67bff6505fec3e712&per_page=20";
+      const form = document.querySelector("form");
+
+      function unsplash(e) {
+        // document.querySelectorAll(".image").remove();
+        e.preventDefault();
+        const input = document.querySelector("input");
+        const url = `${baseURL}&query=${input.value}`;
+        const ajax = new XMLHttpRequest();
+        ajax.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            const res = JSON.parse(this.responseText);
+            // console.log(res);
+            const imageList = document.querySelector(".images-list");
+            if (res.total < 1) {
+              const notification = document.createElement("div");
+              notification.setAttribute("class", "notification");
+              notification.innerHTML = "<h2>No image found</h2>";
+              imageList.appendChild(notification);
+            } else {
+              res.results.forEach(function(image) {
+                const imgURL = image.urls.full;
+                const imageTag = document.createElement("img");
+                imageTag.setAttribute("src", imgURL);
+                imageTag.setAttribute("class", "image");
+
+                imageList.appendChild(imageTag);
+              });
+            }
+          }
+        };
+
+        ajax.open("GET", url, true);
+        ajax.send();
+        input.value = "";
+      }
+    </script>
+  </body>
+</html>
