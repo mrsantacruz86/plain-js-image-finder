@@ -17,7 +17,7 @@
         font-size: 3rem;
         padding: 1rem;
       }
-      input {
+      .text-input {
         display: block;
         width: 90%;
         padding: 10px;
@@ -26,6 +26,10 @@
         border-radius: 2rem;
         /* box-shadow: 2px 2px 3px #333; */
         font-size: 1.25rem;
+      }
+      .radio-group-inline{
+        text-align: center;
+        padding: 1rem;
       }
       .images-list {
         width: 90%;
@@ -43,7 +47,15 @@
   <body>
     <h1>UNSPLASH IMAGE FINDER</h1>
     <form onsubmit="unsplash(event)">
-      <input name="query" type="text" placeholder="search for images..." />
+      <input name="query" type="search" placeholder="search for images..." class="text-input" />
+      <div class="radio-group-inline">
+        <label for="quality"><strong>Quality</strong></label>
+        <input type="radio" name="quality" value="raw">Raw</input>
+        <input type="radio" name="quality" value="full">Full</input>
+        <input type="radio" name="quality" value="regular" >Regular</input>
+        <input type="radio" name="quality" value="small" checked>Small</input>
+        <input type="radio" name="quality" value="thumb" >Thumb</input>
+      </div>
     </form>
     <div class="images-list"></div>
 
@@ -53,10 +65,14 @@
       const form = document.querySelector("form");
 
       function unsplash(e) {
-        // document.querySelectorAll(".image").remove();
+        // document.querySelectorAll(".image-list").removeChild(document.querySelectorAll('.image'));
         e.preventDefault();
-        const input = document.querySelector("input");
-        const url = `${baseURL}&query=${input.value}`;
+        const search = {
+          query: e.target.elements.query.value,
+          quality: e.target.elements.quality.value
+          }
+        // console.log(search);
+        const url = `${baseURL}&query=${search.query}`;
         const ajax = new XMLHttpRequest();
         ajax.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
@@ -70,7 +86,7 @@
               imageList.appendChild(notification);
             } else {
               res.results.forEach(function(image) {
-                const imgURL = image.urls.full;
+                const imgURL = image.urls[search.quality];
                 const imageTag = document.createElement("img");
                 imageTag.setAttribute("src", imgURL);
                 imageTag.setAttribute("class", "image");
